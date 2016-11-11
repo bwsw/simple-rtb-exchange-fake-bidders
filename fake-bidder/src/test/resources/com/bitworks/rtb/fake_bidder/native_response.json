@@ -1,23 +1,26 @@
 {
   "id": "80ce30c53c16e6ede735f123ef6e32361bfc7b22",
-  "bidid": "abc1123",
-  "cur": "USD",
   "seatbid": [
     {
-      "seat": "11",
       "bid": [
         {
-          "id": "3",
+          "id": "1",
           "impid": "1",
-          "price": 4.11,
-          "attr": [
-            9,
-            12
+          "price": 30,
+          "adid": "386787",
+          "nurl": "http:\/\/my.mobfox.com\/win.notice.php?rid=4e82f633910fc78a3b7f841fbafeb051&m=0&price=${AUCTION_PRICE}",
+          "adm": "<?xml version=\"1.0\" encoding=\"utf-8\"?><NAST version=\"1.0\"><Ad id=\"1\" type=\"app\" content=\"506627515\"><Assets><Text id=\"1\" type=\"headline\"><![CDATA[Hay Day]]><\/Text><Text id=\"2\" type=\"description\"><![CDATA[Hay Day is a totally new farming experience with smooth gestural controls lovingly hand...]]><\/Text><Text id=\"3\" type=\"cta\"><![CDATA[Install Now]]><\/Text><Text id=\"4\" type=\"rating\"><![CDATA[4]]><\/Text><Text id=\"5\" type=\"advertiser\"><![CDATA[Supercell Oy]]><\/Text><XHTML id=\"6\" type=\"youtube_video\" content=\"AeOTrnSkKv0\"><![CDATA[<iframe\twidth=\"560\"\theight=\"315\" src=\"http:\/\/www.youtube.com\/embed\/AeOTrnSkKv0\" frameborder=\"0\" allowfullscreen><\/iframe>]]><\/XHTML><Image id=\"7\" type=\"icon\" width=\"512\" height=\"512\"><![CDATA[http:\/\/creative1cdn.mobfox.com\/97f7e8a465268a733da68349c7f0340a.gif]]><\/Image><Image id=\"8\" type=\"main\" width=\"1200\" height=\"627\"><![CDATA[http:\/\/creative1cdn.mobfox.com\/26140822990d48320955a3e5fabf8ef5.gif]]><\/Image><\/Assets><Actions><Action id=\"1\" type=\"click\"><![CDATA[http:\/\/my.mobfox.com\/rtb.click.php?rid=4e82f633910fc78a3b7f841fbafeb051&price=${AUCTION_PRICE}]]><\/Action><\/Actions><Trackers><Tracker id=\"1\" type=\"impression\"><![CDATA[http:\/\/my.mobfox.com\/rtb.impression.pixel.php?rid=4e82f633910fc78a3b7f841fbafeb051&price=${AUCTION_PRICE}]]><\/Tracker><\/Trackers><\/Ad><\/NAST>",
+          "adomain": [
+            "undefined.com"
           ],
-          "h": 700,
-          "w": 400
+          "cid": "40406",
+          "crid": "386787"
         }
-      ]
+      ],
+      "seat": "14566",
+      "group": 0
     }
-  ]
+  ],
+  "bidid": "4e82f633910fc78a3b7f841fbafeb051",
+  "cur": "USD"
 }
