@@ -4,7 +4,7 @@ import java.net.InetSocketAddress
 import com.sun.net.httpserver.HttpServer
 
 /**
-  * Entrypoint of this application.
+  * Entry point of fake bidder application.
   *
   * @author Pavel Tomskikh
   */

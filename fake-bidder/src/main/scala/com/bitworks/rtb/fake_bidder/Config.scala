@@ -6,4 +6,4 @@ package com.bitworks.rtb.fake_bidder
   * @param port bidder mock's port
   * @author Pavel Tomskikh
   */
-case class Config (port: Int)
+case class Config(port: Int)

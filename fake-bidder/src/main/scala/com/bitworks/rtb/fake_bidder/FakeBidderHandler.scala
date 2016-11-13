@@ -2,7 +2,6 @@ package com.bitworks.rtb.fake_bidder
 
 import com.sun.net.httpserver.{HttpExchange, HttpHandler}
 
-
 /**
   * Handler for [[com.bitworks.rtb.fake_bidder.FakeBidder FakeBidder]]'s http server.
   *

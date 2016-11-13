@@ -1,6 +1,7 @@
 package com.bitworks.rtb.fake_bidder
 
 /**
+  * A parser for command line arguments.
   *
   * @author Pavel Tomskikh
   */
