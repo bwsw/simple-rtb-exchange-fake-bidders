@@ -1,4 +1,4 @@
-package com.bitworks.rtb.fake_bidder
+package com.bitworks.rtb.fake.bidder
 
 import java.net.InetSocketAddress
 import com.sun.net.httpserver.HttpServer

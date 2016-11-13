@@ -1,4 +1,4 @@
-package com.bitworks.rtb.fake_bidder
+package com.bitworks.rtb.fake.bidder
 
 import java.io.{ByteArrayInputStream, File}
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
-  * Test for [[com.bitworks.rtb.fake_bidder.ResponseFactory ResponseFactory]].
+  * Test for [[com.bitworks.rtb.fake.bidder.ResponseFactory ResponseFactory]].
   *
   * @author Pavel Tomskikh
   */

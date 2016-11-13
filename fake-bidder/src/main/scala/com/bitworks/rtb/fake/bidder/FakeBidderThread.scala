@@ -1,10 +1,11 @@
-package com.bitworks.rtb.fake_bidder
+package com.bitworks.rtb.fake.bidder
 
 import java.net.URI
+
 import com.sun.net.httpserver.HttpExchange
 
 /**
-  * Thread of [[com.bitworks.rtb.fake_bidder.FakeBidder FakeBidder]]'s http server.
+  * Thread of [[com.bitworks.rtb.fake.bidder.FakeBidder FakeBidder]]'s http server.
   *
   * @param httpExchange describe http connection
   * @author Pavel Tomskikh

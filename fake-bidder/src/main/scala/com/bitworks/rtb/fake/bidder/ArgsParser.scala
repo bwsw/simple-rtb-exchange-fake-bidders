@@ -1,4 +1,4 @@
-package com.bitworks.rtb.fake_bidder
+package com.bitworks.rtb.fake.bidder
 
 /**
   * A parser for command line arguments.
