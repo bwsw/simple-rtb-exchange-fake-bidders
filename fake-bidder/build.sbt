@@ -1,6 +1,6 @@
 name := "fake-bidder"
 
-version := "1.0"
+version := "0.1"
 
 scalaVersion := "2.11.8"
 
@@ -9,3 +9,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.4",
   "com.github.scopt" %% "scopt" % "3.5.0"
 )
+
+assemblyJarName := s"${name.value}-${version.value}.jar"
+mainClass in assembly := Some("com.bitworks.rtb.fake.bidder.FakeBidder")
+test in assembly := {}
