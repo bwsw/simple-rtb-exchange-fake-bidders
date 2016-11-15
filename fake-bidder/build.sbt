@@ -12,4 +12,3 @@ libraryDependencies ++= Seq(
 
 assemblyJarName := s"${name.value}-${version.value}.jar"
 mainClass in assembly := Some("com.bitworks.rtb.fake.bidder.FakeBidder")
-test in assembly := {}

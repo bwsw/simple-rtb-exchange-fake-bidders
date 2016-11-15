@@ -1,6 +1,6 @@
 package com.bitworks.rtb.fake.bidder
 
-import java.io.{File, InputStream}
+import java.io.InputStream
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -56,10 +56,9 @@ class ResponseFactory {
   }
 
   private def getJsonFromFile(fileName: String) = {
-    val path = getClass.getResource(fileName).getPath
-    val file = new File(path)
+    val stream = getClass.getResourceAsStream(fileName)
 
-    mapper.readTree(file).asInstanceOf[ObjectNode]
+    mapper.readTree(stream).asInstanceOf[ObjectNode]
   }
 
   private lazy val bannerResponse = getJsonFromFile("banner.json")
