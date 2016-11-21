@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
 assemblyJarName := s"${name.value}-${version.value}.jar"
 mainClass in assembly := Some("com.bitworks.rtb.fake.bidder.FakeBidder")
 
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 publishTo := {
   val nexus = "http://rtb-ci.z1.netpoint-dc.com:8081/nexus/content/repositories/"
   if (isSnapshot.value)
