@@ -1,0 +1,26 @@
+{
+  "id": "",
+  "seatbid": [
+    {
+      "bid": [
+        {
+          "id": 1,
+          "impid": "",
+          "price": 50,
+          "adid": "785609",
+          "nurl": "http://my.mobfox.com/win.notice.php?rid=43b43b1afdde970da033d1898731ed3b&m=0&price=${AUCTION_PRICE}",
+          "adm": "<a href=\"http://my.mobfox.com/rtb.click.php?rid=43b43b1afdde970da033d1898731ed3b&price=${AUCTION_PRICE}\" target=\"_self\"><img src=\"http://creative2cdn.mobfox.com/a09b229bcc7395f24e1808aa3958e540.gif\" border=\"0\"/></a><img style=\"position:absolute; left: -10000px;\" width=\"1\" height=\"1\" src=\"http://my.mobfox.com/rtb.impression.pixel.php?rid=43b43b1afdde970da033d1898731ed3b&price=${AUCTION_PRICE}\"/>",
+          "adomain": [
+            "babylonhealth.com"
+          ],
+          "iurl": "http://creative2cdn.mobfox.com/a09b229bcc7395f24e1808aa3958e540.gif",
+          "cid": "64634",
+          "crid": "785609"
+        }
+      ],
+      "group": 0
+    }
+  ],
+  "bidid": "43b43b1afdde970da033d1898731ed3b",
+  "cur": "USD"
+}

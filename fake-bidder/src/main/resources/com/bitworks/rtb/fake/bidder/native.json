@@ -1,0 +1,26 @@
+{
+  "id": "",
+  "seatbid": [
+    {
+      "bid": [
+        {
+          "id": "1",
+          "impid": "",
+          "price": 30,
+          "adid": "386787",
+          "nurl": "http://native.test.com/win/1",
+          "adm": "%7B%22native%22%3A%7B%22ver%22%3A1%2C%22link%22%3A%7B%22url%22%3A%22http%3A%2F%2Fnative.test.com%2Fclick%2F1%22%7D%2C%22assets%22%3A%5B%7B%22id%22%3A2%2C%22img%22%3A%7B%22url%22%3A%22http%3A%2F%2Fnative.test.com%2Fimg%2F60x60.jpg%22%2C%22w%22%3A60%2C%22h%22%3A60%7D%7D%2C%7B%22id%22%3A3%2C%22title%22%3A%7B%22text%22%3A%22test+title%22%7D%7D%2C%7B%22id%22%3A4%2C%22data%22%3A%7B%22value%22%3A%22test+decription%22%7D%7D%2C%7B%22id%22%3A6%2C%22data%22%3A%7B%22value%22%3A%225%22%7D%7D%5D%2C%22imptrackers%22%3A%5B%5D%7D%7D",
+          "adomain": [
+            "undefined.com"
+          ],
+          "cid": "40406",
+          "crid": "386787"
+        }
+      ],
+      "seat": "14566",
+      "group": 0
+    }
+  ],
+  "bidid": "4e82f633910fc78a3b7f841fbafeb051",
+  "cur": "USD"
+}
