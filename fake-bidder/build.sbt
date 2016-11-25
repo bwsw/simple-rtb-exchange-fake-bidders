@@ -2,7 +2,7 @@ name := "fake-bidder"
 
 organization := "com.bitworks"
 
-version := "0.1"
+version := "0.12"
 
 scalaVersion := "2.11.8"
 
@@ -23,3 +23,10 @@ publishTo := {
   else
     Some("releases" at nexus + "bitworks-rtb/")
 }
+
+artifact in (Compile, assembly) := {
+  val art = (artifact in (Compile, assembly)).value
+  art.copy(`classifier` = Some("assembly"))
+}
+
+addArtifact(artifact in (Compile, assembly), assembly)
