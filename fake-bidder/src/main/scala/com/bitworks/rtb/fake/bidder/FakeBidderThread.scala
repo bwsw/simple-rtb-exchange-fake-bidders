@@ -34,7 +34,7 @@ class FakeBidderThread(httpExchange: HttpExchange) extends Runnable {
 
   private def getTimeout(url: URI): Int = {
     val params = url.getQuery
-    if (params.isEmpty) 0
+    if (params == null || params.isEmpty) 0
     else {
       val timeoutStringPrefix = "timeout="
       params.split('&').find(_.startsWith(timeoutStringPrefix)) match {

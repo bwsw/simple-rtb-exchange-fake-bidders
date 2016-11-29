@@ -18,10 +18,7 @@ object FakeBidder extends App {
 
       server.start()
 
-      println("Press any key to exit")
-
-      System.in.read()
-      server.stop(0)
+      println("Fake bidder is working...")
 
     case None =>
   }
