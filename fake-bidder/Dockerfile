@@ -1,6 +1,4 @@
-#FROM openjdk:7
-
-FROM dockerfile/ubuntu
+FROM ubuntu:latest
 
 # Install Java.
 RUN \
