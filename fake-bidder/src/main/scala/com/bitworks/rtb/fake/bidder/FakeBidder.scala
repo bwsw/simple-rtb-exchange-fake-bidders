@@ -19,7 +19,7 @@ object FakeBidder extends App {
       server.start()
 
       println("Fake bidder is working...")
-      
+
     case None =>
   }
 }
