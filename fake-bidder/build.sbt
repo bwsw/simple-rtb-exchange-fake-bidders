@@ -2,7 +2,7 @@ name := "fake-bidder"
 
 organization := "com.bitworks"
 
-version := "0.13"
+version := "1.0.0"
 
 scalaVersion := "2.11.8"
 
