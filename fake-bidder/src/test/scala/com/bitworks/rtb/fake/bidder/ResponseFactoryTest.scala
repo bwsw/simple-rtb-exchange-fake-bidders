@@ -5,6 +5,8 @@ import java.io.{ByteArrayInputStream, File}
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.io.Source
+
 /**
   * Test for [[com.bitworks.rtb.fake.bidder.ResponseFactory ResponseFactory]].
   *
@@ -20,7 +22,9 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val file = new File(path)
     val expectedResponse = mapper.readTree(file)
 
-    val request = getClass.getResource("banner_request.json").openStream
+    val requestPath = getClass.getResource("banner_request.json").getPath
+    val request = Source.fromFile(requestPath).mkString.getBytes()
+
     val response = factory.createBidResponse(request)
     val responseJson = mapper.readTree(response)
 
@@ -32,7 +36,9 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val file = new File(path)
     val expectedResponse = mapper.readTree(file)
 
-    val request = getClass.getResource("video_request.json").openStream
+    val requestPath = getClass.getResource("video_request.json").getPath
+    val request = Source.fromFile(requestPath).mkString.getBytes()
+
     val response = factory.createBidResponse(request)
     val responseJson = mapper.readTree(response)
 
@@ -44,7 +50,9 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val file = new File(path)
     val expectedResponse = mapper.readTree(file)
 
-    val request = getClass.getResource("native_request.json").openStream
+    val requestPath = getClass.getResource("native_request.json").getPath
+    val request = Source.fromFile(requestPath).mkString.getBytes()
+
     val response = factory.createBidResponse(request)
     val responseJson = mapper.readTree(response)
 
@@ -52,21 +60,21 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
   }
 
   it should "throw exception when it got request with empty imp array" in {
-    val request = new ByteArrayInputStream("""{"id":"817568131","at":1,"cur":["USD"],"imp":{}}""".getBytes)
+    val request = """{"id":"817568131","at":1,"cur":["USD"],"imp":{}}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
       factory.createBidResponse(request))
   }
 
   it should "throw exception when it got request without id" in {
-    val request = new ByteArrayInputStream("""{"at":1,"cur":["USD"],"imp":{}}""".getBytes)
+    val request = """{"at":1,"cur":["USD"],"imp":{}}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
       factory.createBidResponse(request))
   }
 
   it should "throw exception when it got request without imp array" in {
-    val request = new ByteArrayInputStream("""{"id":"1","at":1,"cur":["USD"]}""".getBytes)
+    val request = """{"id":"1","at":1,"cur":["USD"]}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
       factory.createBidResponse(request))

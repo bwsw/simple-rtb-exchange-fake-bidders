@@ -17,12 +17,12 @@ class ResponseFactory {
   /**
     * Returns Array[Byte] representation of BidResponse for BidRequest.
     *
-    * @param inputStream BidRequest
+    * @param inputBytes BidRequest
     * @return
     */
-  def createBidResponse(inputStream: InputStream): Array[Byte] = {
+  def createBidResponse(inputBytes: Array[Byte]): Array[Byte] = {
 
-    val bidRequest = mapper.readTree(inputStream)
+    val bidRequest = mapper.readTree(inputBytes)
 
     val bidRequestId = bidRequest.get("id")
     if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
