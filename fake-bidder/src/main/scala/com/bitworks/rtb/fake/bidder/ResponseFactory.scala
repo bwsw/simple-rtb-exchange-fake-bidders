@@ -20,24 +20,27 @@ class ResponseFactory {
     * @param inputBytes BidRequest
     * @return
     */
-  def createBidResponse(inputBytes: Array[Byte], price: Option[BigDecimal]): Array[Byte] = {
+  def createBidResponse(
+      inputBytes: Array[Byte],
+      price: Option[BigDecimal],
+      modifier: Option[ResponseModifier]): Array[Byte] = {
 
     val bidRequest = mapper.readTree(inputBytes)
 
     val bidRequestId = bidRequest.get("id")
-    if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
+    if ( bidRequestId == null || !bidRequestId.isTextual ) throw new IllegalArgumentException
 
     val impArray = bidRequest.get("imp")
-    if (impArray == null || !impArray.isArray || !impArray.elements.hasNext) throw new IllegalArgumentException
+    if ( impArray == null || !impArray.isArray || !impArray.elements.hasNext ) throw new IllegalArgumentException
 
     val imp = impArray.elements.next
     val impId = imp.get("id")
-    if (impId == null || !impId.isTextual) throw new IllegalArgumentException
+    if ( impId == null || !impId.isTextual ) throw new IllegalArgumentException
 
     var bidResponse: ObjectNode = null
-    if (imp.has("banner")) bidResponse = bannerResponse
-    else if (imp.has("video")) bidResponse = videoResponse
-    else if (imp.has("native")) bidResponse = nativeResponse
+    if ( imp.has("banner") ) bidResponse = bannerResponse.deepCopy
+    else if ( imp.has("video") ) bidResponse = videoResponse.deepCopy
+    else if ( imp.has("native") ) bidResponse = nativeResponse.deepCopy
     else throw new IllegalArgumentException
 
     bidResponse.replace("id", bidRequestId)
@@ -64,7 +67,32 @@ class ResponseFactory {
       .asInstanceOf[ObjectNode]
       .put("price", resultingPrice)
 
-    mapper.writeValueAsBytes(bidResponse)
+    modifier match {
+      case Some(InvalidJson) =>
+        val correctBytes = mapper.writeValueAsBytes(bidResponse)
+        '}'.toByte +: correctBytes :+ ','.toByte
+      case Some(InvalidData) =>
+        bidResponse
+          .get("seatbid")
+          .elements
+          .next
+          .asInstanceOf[ObjectNode]
+          .get("bid")
+          .elements
+          .next
+          .asInstanceOf[ObjectNode]
+          .put("impid", s"incorrectImpId${impId.textValue}")
+        mapper.writeValueAsBytes(bidResponse)
+      case Some(NoBidNoContent) =>
+        new Array[Byte](0)
+      case Some(NoBidEmptyJson) =>
+        mapper.writeValueAsBytes(mapper.createObjectNode)
+      case Some(NoBidEmptySeatBid) =>
+        bidResponse.set("seatbid", mapper.createArrayNode)
+        mapper.writeValueAsBytes(bidResponse)
+      case None =>
+        mapper.writeValueAsBytes(bidResponse)
+    }
   }
 
   private def getJsonFromFile(fileName: String) = {
