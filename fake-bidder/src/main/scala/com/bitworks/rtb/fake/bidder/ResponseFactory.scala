@@ -20,7 +20,7 @@ class ResponseFactory {
     * @param inputBytes BidRequest
     * @return
     */
-  def createBidResponse(inputBytes: Array[Byte]): Array[Byte] = {
+  def createBidResponse(inputBytes: Array[Byte], price: Option[BigDecimal]): Array[Byte] = {
 
     val bidRequest = mapper.readTree(inputBytes)
 
@@ -52,6 +52,18 @@ class ResponseFactory {
       .asInstanceOf[ObjectNode]
       .replace("impid", impId)
 
+    val resultingPrice = price.getOrElse(defaultPrice).bigDecimal
+    bidResponse
+      .get("seatbid")
+      .elements
+      .next
+      .asInstanceOf[ObjectNode]
+      .get("bid")
+      .elements
+      .next
+      .asInstanceOf[ObjectNode]
+      .put("price", resultingPrice)
+
     mapper.writeValueAsBytes(bidResponse)
   }
 
@@ -61,6 +73,7 @@ class ResponseFactory {
     mapper.readTree(stream).asInstanceOf[ObjectNode]
   }
 
+  private val defaultPrice = BigDecimal("50")
   private lazy val bannerResponse = getJsonFromFile("banner.json")
   private lazy val videoResponse = getJsonFromFile("video.json")
   private lazy val nativeResponse = getJsonFromFile("native.json")

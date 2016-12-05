@@ -2,10 +2,10 @@ package com.bitworks.rtb.fake.bidder
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 
-import scala.collection.immutable.HashMap
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
@@ -19,57 +19,63 @@ class RequestHandler(config: Config) {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  var timeouts = new HashMap[String, Long]()
   val factory = new ResponseFactory
+
+  /**
+    * Returns timeout.
+    *
+    * @param timeoutStr some timeout param from query string
+    */
+  def getTimeout(timeoutStr: Option[String]) = {
+    timeoutStr match {
+      case Some(ts) =>
+        Try(ts.toLong) match {
+          case Success(t) => t
+          case Failure(_) => throw new IllegalArgumentException
+        }
+      case None => 0L
+    }
+  }
+
+  /**
+    * Returns price.
+    *
+    * @param priceStr some bid price from query string
+    */
+  def getPrice(priceStr: Option[String]) = {
+    priceStr match {
+      case Some(pr) =>
+        Try(BigDecimal(pr)) match {
+          case Success(p) => Some(p)
+          case Failure(_) => throw new IllegalArgumentException
+        }
+      case None => None
+    }
+  }
 
   val route =
     post {
-      pathPrefix("timeout" / Segment) { timeoutName =>
-        entity(as[String]) { timeoutValue =>
-          Try(timeoutValue.toLong) match {
-            case Success(t) =>
-              timeouts = timeouts + (timeoutName -> t)
-              complete("ok")
-            case Failure(_) =>
-              complete(s"failed, cannot parse $timeoutValue")
-          }
-        }
-      } ~
-        parameter('timeout.?) { timeoutStr =>
+        parameters('timeout.?, 'price.?) { (timeoutStr, priceStr) =>
           entity(as[Array[Byte]]) { body =>
-            val timeout =
-              timeoutStr match {
-                case Some(ts) =>
-                  Try(ts.toLong) match {
-                    case Success(t) => t
-                    case Failure(_) => timeouts.get(ts) match {
-                      case Some(v) => v
-                      case None =>
-                        timeouts = timeouts + (ts -> 0)
-                        0L
-                    }
-                  }
-                case None => 0L
-              }
-
             val f = Future {
+              val timeout = getTimeout(timeoutStr)
+              val price = getPrice(priceStr)
               Thread.sleep(timeout)
-              factory.createBidResponse(body)
+              factory.createBidResponse(body, price)
             }
             onComplete(f) {
-              case Success(bytes) => complete(bytes)
-              case Failure(t) => complete(t)
+              case Success(bytes) => complete {
+                HttpResponse(
+                  entity = HttpEntity(
+                    ContentType(MediaTypes.`application/json`), bytes))
+              }
+              case Failure(t) =>
+                t.printStackTrace()
+                complete(HttpResponse(status = StatusCodes.BadRequest))
             }
           }
         }
-    } ~
-      get {
-        path("timeouts") {
-          complete {
-            timeouts.map(x => s"${x._1} - ${x._2} ms").mkString("\n")
-          }
-        }
-      }
+    }
 
   def run() = {
     Http().bindAndHandle(route, "0.0.0.0", config.port)
