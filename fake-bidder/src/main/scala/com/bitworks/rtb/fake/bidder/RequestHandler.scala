@@ -20,6 +20,7 @@ class RequestHandler(config: Config) {
   implicit val executionContext = system.dispatcher
 
   val factory = new ResponseFactory
+  val modifierFactory = new ResponseModifierFactory
 
   /**
     * Returns timeout.
@@ -53,50 +54,68 @@ class RequestHandler(config: Config) {
     }
   }
 
-  /**
-    * Returns bid response modifier.
-    *
-    * @param modifierStr some modifier from query string
-    */
-  def getModifier(modifierStr: Option[String]) = {
-    modifierStr match {
-      case Some("invalidjson") => Some(InvalidJson)
-      case Some("invaliddata") => Some(InvalidData)
-      case Some("nobidnocontent") => Some(NoBidNoContent)
-      case Some("nobidemptyjson") => Some(NoBidEmptyJson)
-      case Some("nobidemptyseatbid") => Some(NoBidEmptySeatBid)
-      case Some(str) => throw new IllegalArgumentException(s"$str is not valid modifier")
-      case None => None
-    }
-  }
 
   val route =
     post {
-      parameters('timeout.?, 'price.?, 'modifier.?) { (timeoutStr, priceStr, modifierStr) =>
-        entity(as[Array[Byte]]) { body =>
-          val modifier = getModifier(modifierStr)
-          val timeout = getTimeout(timeoutStr)
-          val price = getPrice(priceStr)
-          val f = Future {
-            Thread.sleep(timeout)
-            factory.createBidResponse(body, price, modifier)
+      parameters('timeout.?, 'price.?, 'modifier.?, 'winhost.?) {
+        (timeoutStr, priceStr, modifierStr, winHostStr) =>
+          entity(as[Array[Byte]]) { body =>
+            val modifier = modifierFactory.getModifier(modifierStr)
+            modifier match {
+              case Some(WinNoticeWithAdm |
+                        WinNoticeWithoutAdm |
+                        BrokenWinNoticeWithAdm |
+                        TimeoutWinNoticeWithAdm(_)) if winHostStr.isEmpty =>
+                complete {
+                  HttpResponse(
+                    entity = "win host not specified!",
+                    status = StatusCodes.BadRequest)
+                }
+              case _ =>
+                val timeout = getTimeout(timeoutStr)
+                val price = getPrice(priceStr)
+                val f = Future {
+                  Thread.sleep(timeout)
+                  factory.createBidResponse(body, price, modifier, winHostStr)
+                }
+                onComplete(f) {
+                  case Success(bytes) =>
+                    val status = if ( modifier.contains(NoBidNoContent) ) StatusCodes.NoContent else StatusCodes.OK
+                    complete {
+                      HttpResponse(
+                        status = status,
+                        entity = HttpEntity(
+                          ContentType(MediaTypes.`application/json`), bytes))
+                    }
+                  case Failure(t) =>
+                    t.printStackTrace()
+                    complete(HttpResponse(status = StatusCodes.InternalServerError))
+                }
+            }
           }
-          onComplete(f) {
-            case Success(bytes) =>
-              val status = if ( modifier.contains(NoBidNoContent) ) StatusCodes.NoContent else StatusCodes.OK
-              complete {
-                HttpResponse(
-                  status = status,
-                  entity = HttpEntity(
-                    ContentType(MediaTypes.`application/json`), bytes))
+      }
+    } ~
+      get {
+        path("win-notice") {
+          parameters('modifier, 'type) { (modifierStr, typeStr) =>
+            val modifier = modifierFactory.getModifier(Some(modifierStr))
+            val f = Future {
+              modifier match {
+                case Some(TimeoutWinNoticeWithAdm(timeout)) => Thread.sleep(timeout)
+                case _ =>
               }
-            case Failure(t) =>
-              t.printStackTrace()
-              complete(HttpResponse(status = StatusCodes.BadRequest))
+              factory.getAdm(typeStr, modifier)
+            }
+            onComplete(f) {
+              case Success(body) =>
+                complete(body)
+              case Failure(t) =>
+                t.printStackTrace()
+                complete(HttpResponse(status = StatusCodes.InternalServerError))
+            }
           }
         }
       }
-    }
 
   def run() = {
     Http().bindAndHandle(route, "0.0.0.0", config.port)

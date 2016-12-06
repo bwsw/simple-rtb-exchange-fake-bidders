@@ -1,7 +1,5 @@
 package com.bitworks.rtb.fake.bidder
 
-import java.io.InputStream
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 
@@ -11,8 +9,35 @@ import com.fasterxml.jackson.databind.node.ObjectNode
   * @author Pavel Tomskikh
   */
 class ResponseFactory {
-
   val mapper = new ObjectMapper
+
+  /**
+    * Returns ad markup for given imp type.
+    *
+    * @param impType  impression type
+    * @param modifier bid response modifier
+    */
+  def getAdm(impType: String, modifier: Option[ResponseModifier]) = {
+    modifier match {
+      case Some(WinNoticeWithoutAdm) => ""
+      case Some(WinNoticeWithAdm) | Some(TimeoutWinNoticeWithAdm(_)) =>
+        val node = impType match {
+          case "1" => bannerResponse
+          case "2" => videoResponse
+          case "3" => nativeResponse
+        }
+        node
+          .get("seatbid")
+          .elements
+          .next
+          .get("bid")
+          .elements
+          .next.get("adm")
+          .textValue
+
+      case _ => throw new RuntimeException
+    }
+  }
 
   /**
     * Returns Array[Byte] representation of BidResponse for BidRequest.
@@ -23,7 +48,8 @@ class ResponseFactory {
   def createBidResponse(
       inputBytes: Array[Byte],
       price: Option[BigDecimal],
-      modifier: Option[ResponseModifier]): Array[Byte] = {
+      modifier: Option[ResponseModifier],
+      winHost: Option[String]): Array[Byte] = {
 
     val bidRequest = mapper.readTree(inputBytes)
 
@@ -37,26 +63,19 @@ class ResponseFactory {
     val impId = imp.get("id")
     if ( impId == null || !impId.isTextual ) throw new IllegalArgumentException
 
-    var bidResponse: ObjectNode = null
-    if ( imp.has("banner") ) bidResponse = bannerResponse.deepCopy
-    else if ( imp.has("video") ) bidResponse = videoResponse.deepCopy
-    else if ( imp.has("native") ) bidResponse = nativeResponse.deepCopy
+    val impType = if ( imp.has("banner") ) 1
+    else if ( imp.has("video") ) 2
+    else if ( imp.has("native") ) 3
     else throw new IllegalArgumentException
 
-    bidResponse.replace("id", bidRequestId)
-    bidResponse
-      .get("seatbid")
-      .elements
-      .next
-      .asInstanceOf[ObjectNode]
-      .get("bid")
-      .elements
-      .next
-      .asInstanceOf[ObjectNode]
-      .replace("impid", impId)
+    val bidResponse = impType match {
+      case 1 => bannerResponse.deepCopy
+      case 2 => videoResponse.deepCopy
+      case 3 => nativeResponse.deepCopy
+    }
 
-    val resultingPrice = price.getOrElse(defaultPrice).bigDecimal
-    bidResponse
+    bidResponse.replace("id", bidRequestId)
+    val bidNode = bidResponse
       .get("seatbid")
       .elements
       .next
@@ -65,34 +84,37 @@ class ResponseFactory {
       .elements
       .next
       .asInstanceOf[ObjectNode]
-      .put("price", resultingPrice)
+
+    bidNode.replace("impid", impId)
+    bidNode.put("price", price.getOrElse(defaultPrice).bigDecimal)
 
     modifier match {
       case Some(InvalidJson) =>
         val correctBytes = mapper.writeValueAsBytes(bidResponse)
-        '}'.toByte +: correctBytes :+ ','.toByte
-      case Some(InvalidData) =>
-        bidResponse
-          .get("seatbid")
-          .elements
-          .next
-          .asInstanceOf[ObjectNode]
-          .get("bid")
-          .elements
-          .next
-          .asInstanceOf[ObjectNode]
-          .put("impid", s"incorrectImpId${impId.textValue}")
-        mapper.writeValueAsBytes(bidResponse)
+        return '}'.toByte +: correctBytes :+ ','.toByte
+
       case Some(NoBidNoContent) =>
-        new Array[Byte](0)
+        return new Array[Byte](0)
+
+      case Some(InvalidData) =>
+        bidNode.put("impid", s"incorrectImpId${impId.textValue}")
+
       case Some(NoBidEmptyJson) =>
-        mapper.writeValueAsBytes(mapper.createObjectNode)
+        bidResponse.removeAll()
+
       case Some(NoBidEmptySeatBid) =>
         bidResponse.set("seatbid", mapper.createArrayNode)
-        mapper.writeValueAsBytes(bidResponse)
-      case None =>
-        mapper.writeValueAsBytes(bidResponse)
+
+      case Some(WinNoticeWithoutAdm) =>
+        bidNode.put("nurl", s"http://${winHost.get}/win-notice?modifier=winnotice-withoutadm&type=$impType")
+
+      case m@Some(WinNoticeWithAdm | TimeoutWinNoticeWithAdm(_) | BrokenWinNoticeWithAdm) =>
+        bidNode.put("nurl", s"http://${winHost.get}/win-notice?modifier=${m.get.toString}&type=$impType")
+        bidNode.remove("adm")
+
+      case _ =>
     }
+    mapper.writeValueAsBytes(bidResponse)
   }
 
   private def getJsonFromFile(fileName: String) = {
