@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "com.github.scopt" %% "scopt" % "3.5.0"
 )
 
-assemblyJarName := s"${name.value}-${version.value}.jar"
+assemblyJarName := s"${name.value}-${version.value}-jar-with-dependencies.jar"
 mainClass in assembly := Some("com.bitworks.rtb.fake.bidder.FakeBidder")
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
@@ -26,7 +26,7 @@ publishTo := {
 
 artifact in (Compile, assembly) := {
   val art = (artifact in (Compile, assembly)).value
-  art.copy(`classifier` = Some("assembly"))
+  art.copy(`classifier` = Some("jar-with-dependencies"))
 }
 
 addArtifact(artifact in (Compile, assembly), assembly)
