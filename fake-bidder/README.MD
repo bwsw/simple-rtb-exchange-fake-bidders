@@ -1,10 +1,17 @@
 # Fake bidder utility
+
 This application provides access to fake RTB bidders.
+
 ## Usage
+
 Run application using **sbt "run -p \<port\>"** where port - application port.
-Send POST requests in given format: 
+
+Send POST requests in given format:
+ 
 **http://\<host\>:\<port\>?timeout=\<timeout\>&price=\<price\>&    modifier=\<modifier\>&winhost=\<winhost\>**
+
 ### Parameters:
+
 - **\<host\>** - application host,
 - **\<port\>** - application port,
 - **\<timeout\>** - waiting time before response,
