@@ -26,19 +26,19 @@ class ResponseFactory {
     val bidRequest = mapper.readTree(inputBytes)
 
     val bidRequestId = bidRequest.get("id")
-    if ( bidRequestId == null || !bidRequestId.isTextual ) throw new IllegalArgumentException
+    if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
 
     val impArray = bidRequest.get("imp")
-    if ( impArray == null || !impArray.isArray || !impArray.elements.hasNext ) throw new IllegalArgumentException
+    if (impArray == null || !impArray.isArray || !impArray.elements.hasNext) throw new IllegalArgumentException
 
     val imp = impArray.elements.next
     val impId = imp.get("id")
-    if ( impId == null || !impId.isTextual ) throw new IllegalArgumentException
+    if (impId == null || !impId.isTextual) throw new IllegalArgumentException
 
     var bidResponse: ObjectNode = null
-    if ( imp.has("banner") ) bidResponse = bannerResponse.deepCopy
-    else if ( imp.has("video") ) bidResponse = videoResponse.deepCopy
-    else if ( imp.has("native") ) bidResponse = nativeResponse.deepCopy
+    if (imp.has("banner")) bidResponse = bannerResponse.deepCopy
+    else if (imp.has("video")) bidResponse = videoResponse.deepCopy
+    else if (imp.has("native")) bidResponse = nativeResponse.deepCopy
     else throw new IllegalArgumentException
 
     bidResponse.replace("id", bidRequestId)

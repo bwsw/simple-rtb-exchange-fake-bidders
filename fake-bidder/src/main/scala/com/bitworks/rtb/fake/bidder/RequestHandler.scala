@@ -83,7 +83,7 @@ class RequestHandler(config: Config) {
           }
           onComplete(f) {
             case Success(bytes) =>
-              val status = if ( modifier.contains(NoBidNoContent) ) StatusCodes.NoContent else StatusCodes.OK
+              val status = if (modifier.contains(NoBidNoContent)) StatusCodes.NoContent else StatusCodes.OK
               complete {
                 HttpResponse(
                   status = status,
@@ -91,7 +91,6 @@ class RequestHandler(config: Config) {
                     ContentType(MediaTypes.`application/json`), bytes))
               }
             case Failure(t) =>
-              t.printStackTrace()
               complete(HttpResponse(status = StatusCodes.BadRequest))
           }
         }
