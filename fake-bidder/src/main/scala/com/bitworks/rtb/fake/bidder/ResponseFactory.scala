@@ -88,6 +88,7 @@ class ResponseFactory {
       case Some(NoBidEmptySeatBid) =>
         bidResponse.set("seatbid", mapper.createArrayNode)
         mapper.writeValueAsBytes(bidResponse)
+      case Some(_) => throw new IllegalArgumentException
       case None =>
         mapper.writeValueAsBytes(bidResponse)
     }
