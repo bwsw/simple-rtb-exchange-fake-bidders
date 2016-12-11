@@ -53,28 +53,48 @@ class RequestHandler(config: Config) {
     }
   }
 
+  /**
+    * Returns bid response modifier.
+    *
+    * @param modifierStr some modifier from query string
+    */
+  def getModifier(modifierStr: Option[String]) = {
+    modifierStr match {
+      case Some("invalidjson") => Some(InvalidJson)
+      case Some("invaliddata") => Some(InvalidData)
+      case Some("nobidnocontent") => Some(NoBidNoContent)
+      case Some("nobidemptyjson") => Some(NoBidEmptyJson)
+      case Some("nobidemptyseatbid") => Some(NoBidEmptySeatBid)
+      case Some(str) => throw new IllegalArgumentException(s"$str is not valid modifier")
+      case None => None
+    }
+  }
+
   val route =
     post {
-        parameters('timeout.?, 'price.?) { (timeoutStr, priceStr) =>
-          entity(as[Array[Byte]]) { body =>
-            val f = Future {
-              val timeout = getTimeout(timeoutStr)
-              val price = getPrice(priceStr)
-              Thread.sleep(timeout)
-              factory.createBidResponse(body, price)
-            }
-            onComplete(f) {
-              case Success(bytes) => complete {
+      parameters('timeout.?, 'price.?, 'modifier.?) { (timeoutStr, priceStr, modifierStr) =>
+        entity(as[Array[Byte]]) { body =>
+          val modifier = getModifier(modifierStr)
+          val timeout = getTimeout(timeoutStr)
+          val price = getPrice(priceStr)
+          val f = Future {
+            Thread.sleep(timeout)
+            factory.createBidResponse(body, price, modifier)
+          }
+          onComplete(f) {
+            case Success(bytes) =>
+              val status = if (modifier.contains(NoBidNoContent)) StatusCodes.NoContent else StatusCodes.OK
+              complete {
                 HttpResponse(
+                  status = status,
                   entity = HttpEntity(
                     ContentType(MediaTypes.`application/json`), bytes))
               }
-              case Failure(t) =>
-                t.printStackTrace()
-                complete(HttpResponse(status = StatusCodes.BadRequest))
-            }
+            case Failure(t) =>
+              complete(HttpResponse(status = StatusCodes.BadRequest))
           }
         }
+      }
     }
 
   def run() = {

@@ -26,7 +26,7 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val requestPath = getClass.getResource("banner_request.json").getPath
     val request = Source.fromFile(requestPath).mkString.getBytes()
 
-    val response = factory.createBidResponse(request, None)
+    val response = factory.createBidResponse(request, None, None)
     val responseJson = mapper.readTree(response)
 
     responseJson shouldBe expectedResponse
@@ -40,7 +40,7 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val requestPath = getClass.getResource("video_request.json").getPath
     val request = Source.fromFile(requestPath).mkString.getBytes()
 
-    val response = factory.createBidResponse(request, None)
+    val response = factory.createBidResponse(request, None, None)
     val responseJson = mapper.readTree(response)
 
     responseJson shouldBe expectedResponse
@@ -54,7 +54,7 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val requestPath = getClass.getResource("native_request.json").getPath
     val request = Source.fromFile(requestPath).mkString.getBytes()
 
-    val response = factory.createBidResponse(request, None)
+    val response = factory.createBidResponse(request, None, None)
     val responseJson = mapper.readTree(response)
 
     responseJson shouldBe expectedResponse
@@ -64,21 +64,21 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
     val request = """{"id":"817568131","at":1,"cur":["USD"],"imp":{}}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
-      factory.createBidResponse(request, None))
+      factory.createBidResponse(request, None, None))
   }
 
   it should "throw exception when it got request without id" in {
     val request = """{"at":1,"cur":["USD"],"imp":{}}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
-      factory.createBidResponse(request, None))
+      factory.createBidResponse(request, None, None))
   }
 
   it should "throw exception when it got request without imp array" in {
     val request = """{"id":"1","at":1,"cur":["USD"]}""".getBytes
 
     an[IllegalArgumentException] shouldBe thrownBy(
-      factory.createBidResponse(request, None))
+      factory.createBidResponse(request, None, None))
   }
 
   it should "use non default price if it's necessary" in {
@@ -88,7 +88,7 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
       val requestPath = getClass.getResource(s"${x}_request.json").getPath
       val request = Source.fromFile(requestPath).mkString.getBytes()
 
-      val response = factory.createBidResponse(request, Some(expectedPrice))
+      val response = factory.createBidResponse(request, Some(expectedPrice), None)
       val responseJson = mapper.readTree(response)
 
       val price = responseJson
@@ -104,6 +104,86 @@ class ResponseFactoryTest extends FlatSpec with Matchers {
         .decimalValue()
 
       price shouldBe expectedPrice.bigDecimal
+    }
+  }
+
+  it should "return invalid JSON if modifier specified" in {
+    Seq("banner", "video", "native").foreach { x =>
+      val requestPath = getClass.getResource(s"${x}_request.json").getPath
+      val request = Source.fromFile(requestPath).mkString.getBytes()
+
+      val response = factory.createBidResponse(request, None, Some(InvalidJson))
+      an[Throwable] should be thrownBy {
+        val responseJson = mapper.readTree(response)
+      }
+    }
+  }
+
+  it should "return JSON with invalid data if modifier specified" in {
+    Seq("banner", "video", "native").foreach { x =>
+      val expectedId = "1"
+
+      val requestPath = getClass.getResource(s"${x}_request.json").getPath
+      val request = Source.fromFile(requestPath).mkString.getBytes()
+
+      val response = factory.createBidResponse(request, None, Some(InvalidData))
+      val responseJson = mapper.readTree(response)
+
+      val impId = responseJson
+        .get("seatbid")
+        .elements
+        .next
+        .asInstanceOf[ObjectNode]
+        .get("bid")
+        .elements
+        .next
+        .asInstanceOf[ObjectNode]
+        .get("impid")
+        .textValue()
+
+      impId should not be expectedId
+    }
+  }
+
+  it should "return empty JSON if modifier specified" in {
+    Seq("banner", "video", "native").foreach { x =>
+      val requestPath = getClass.getResource(s"${x}_request.json").getPath
+      val request = Source.fromFile(requestPath).mkString.getBytes()
+
+      val response = factory.createBidResponse(request, None, Some(NoBidEmptyJson))
+      val responseJson = mapper.readTree(response).toString
+
+      responseJson shouldBe "{}"
+    }
+  }
+
+  it should "return empty response if modifier specified" in {
+    Seq("banner", "video", "native").foreach { x =>
+      val requestPath = getClass.getResource(s"${x}_request.json").getPath
+      val request = Source.fromFile(requestPath).mkString.getBytes()
+
+      val response = factory.createBidResponse(request, None, Some(NoBidNoContent))
+
+      response shouldBe empty
+    }
+  }
+
+  it should "return JSON with empty seat bid if modifier specified" in {
+    Seq("banner", "video", "native").foreach { x =>
+      val expectedId = "1"
+
+      val requestPath = getClass.getResource(s"${x}_request.json").getPath
+      val request = Source.fromFile(requestPath).mkString.getBytes()
+
+      val response = factory.createBidResponse(request, None, Some(NoBidEmptySeatBid))
+      val responseJson = mapper.readTree(response)
+
+      an[NoSuchElementException] should be thrownBy {
+        responseJson
+          .get("seatbid")
+          .elements
+          .next
+      }
     }
   }
 }
