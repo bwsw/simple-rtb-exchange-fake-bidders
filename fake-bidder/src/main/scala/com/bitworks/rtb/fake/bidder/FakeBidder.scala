@@ -1,8 +1,5 @@
 package com.bitworks.rtb.fake.bidder
 
-import java.net.InetSocketAddress
-import com.sun.net.httpserver.HttpServer
-
 /**
   * Entry point of fake bidder application.
   *
@@ -12,14 +9,10 @@ object FakeBidder extends App {
 
   ArgsParser(args) match {
     case Some(config) =>
-      val server = HttpServer.create(new InetSocketAddress(config.port), 0)
-      server.createContext("/", new FakeBidderHandler())
-      server.setExecutor(null)
-
-      server.start()
-
-      println("Fake bidder is working...")
-
+      val handler = new RequestHandler(config)
+      handler.run()
+      println(s"Server online at http://0.0.0.0:${config.port}/")
+      
     case None =>
   }
 }

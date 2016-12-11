@@ -9,7 +9,8 @@ scalaVersion := "2.11.8"
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "3.0.0" % "test",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.4",
-  "com.github.scopt" %% "scopt" % "3.5.0"
+  "com.github.scopt" %% "scopt" % "3.5.0",
+  "com.typesafe.akka" %% "akka-http-experimental" % "2.4.11"
 )
 
 assemblyJarName := s"${name.value}-${version.value}-jar-with-dependencies.jar"
