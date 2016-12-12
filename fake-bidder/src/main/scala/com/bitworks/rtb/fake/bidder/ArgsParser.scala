@@ -11,7 +11,12 @@ object ArgsParser {
       .action((i, c) => c.copy(port = i))
       .required()
       .text("fake bidder's port")
+
+    opt[String]('h', "host")
+      .action((i, c) => c.copy(host = i))
+      .required()
+      .text("fake bidder's host")
   }
 
-  def apply(args: Seq[String]) = parser.parse(args, Config(0))
+  def apply(args: Seq[String]) = parser.parse(args, Config(0, ""))
 }
