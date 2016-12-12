@@ -54,14 +54,14 @@ class ResponseFactory {
     val bidRequest = mapper.readTree(inputBytes)
 
     val bidRequestId = bidRequest.get("id")
-    if ( bidRequestId == null || !bidRequestId.isTextual ) throw new IllegalArgumentException
+    if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
 
     val impArray = bidRequest.get("imp")
-    if ( impArray == null || !impArray.isArray || !impArray.elements.hasNext ) throw new IllegalArgumentException
+    if (impArray == null || !impArray.isArray || !impArray.elements.hasNext) throw new IllegalArgumentException
 
     val imp = impArray.elements.next
     val impId = imp.get("id")
-    if ( impId == null || !impId.isTextual ) throw new IllegalArgumentException
+    if (impId == null || !impId.isTextual) throw new IllegalArgumentException
 
     val impType = if ( imp.has("banner") ) 1
     else if ( imp.has("video") ) 2
