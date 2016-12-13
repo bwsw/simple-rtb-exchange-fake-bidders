@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import com.typesafe.config._
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -15,7 +16,11 @@ import scala.util.{Failure, Success, Try}
   * @author Egor Ilchenko
   */
 class RequestHandler(config: Config) {
-  implicit val system = ActorSystem("main")
+  val akkaConf = ConfigFactory.load()
+    .withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("OFF"))
+    .withValue("akka.stdout-loglevel", ConfigValueFactory.fromAnyRef("OFF"))
+
+  implicit val system = ActorSystem("main", akkaConf)
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
@@ -121,6 +126,6 @@ class RequestHandler(config: Config) {
       }
 
   def run() = {
-    Http().bindAndHandle(route, "0.0.0.0", config.port)
+    Http().bindAndHandle(route, config.host, config.port)
   }
 }
