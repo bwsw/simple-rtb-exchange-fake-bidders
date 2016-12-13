@@ -93,7 +93,6 @@ class RequestHandler(config: Config) {
                           ContentType(MediaTypes.`application/json`), bytes))
                     }
                   case Failure(t) =>
-                    t.printStackTrace()
                     complete(HttpResponse(status = StatusCodes.InternalServerError))
                 }
             }
@@ -115,7 +114,6 @@ class RequestHandler(config: Config) {
               case Success(body) =>
                 complete(body)
               case Failure(t) =>
-                t.printStackTrace()
                 complete(HttpResponse(status = StatusCodes.InternalServerError))
             }
           }
