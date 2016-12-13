@@ -7,7 +7,6 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.typesafe.config._
 
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
