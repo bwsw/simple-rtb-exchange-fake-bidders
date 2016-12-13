@@ -57,8 +57,7 @@ class ResponseFactory {
     if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
 
     val impArray = bidRequest.get("imp")
-    if (impArray == null || !impArray.isArray || !impArray.elements
-      .hasNext) throw new IllegalArgumentException
+    if (impArray == null || !impArray.isArray || !impArray.elements.hasNext) throw new IllegalArgumentException
 
     val imp = impArray.elements.next
     val impId = imp.get("id")
@@ -110,11 +109,11 @@ class ResponseFactory {
         bidNode
           .put(
             "nurl",
-            s"http://${winHost.get}/win-notice?modifier=winnotice-withoutadm&type=$impType")
+            s"http://${winHost.get}/win-notice?modifier=${WinNoticeWithoutAdm.name}&type=$impType")
 
       case m@Some(WinNoticeWithAdm | TimeoutWinNoticeWithAdm(_) | BrokenWinNoticeWithAdm) =>
         bidNode
-          .put("nurl", s"http://${winHost.get}/win-notice?modifier=${m.get.toString}&type=$impType")
+          .put("nurl", s"http://${winHost.get}/win-notice?modifier=${m.get.name}&type=$impType")
         bidNode.remove("adm")
 
       case _ =>

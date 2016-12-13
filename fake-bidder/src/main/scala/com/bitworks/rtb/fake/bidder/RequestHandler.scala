@@ -24,7 +24,7 @@ class RequestHandler(config: Config) {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  val factory = new ResponseFactory
+  val responseFactory = new ResponseFactory
   val modifierFactory = new ResponseModifierFactory
 
   /**
@@ -82,7 +82,7 @@ class RequestHandler(config: Config) {
                 val price = getPrice(priceStr)
                 val f = Future {
                   Thread.sleep(timeout)
-                  factory.createBidResponse(body, price, modifier, winHostStr)
+                  responseFactory.createBidResponse(body, price, modifier, winHostStr)
                 }
                 onComplete(f) {
                   case Success(bytes) =>
@@ -113,7 +113,7 @@ class RequestHandler(config: Config) {
                 case Some(TimeoutWinNoticeWithAdm(timeout)) => Thread.sleep(timeout)
                 case _ =>
               }
-              factory.getAdm(typeStr, modifier)
+              responseFactory.getAdm(typeStr, modifier)
             }
             onComplete(f) {
               case Success(body) =>
