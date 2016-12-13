@@ -57,15 +57,16 @@ class ResponseFactory {
     if (bidRequestId == null || !bidRequestId.isTextual) throw new IllegalArgumentException
 
     val impArray = bidRequest.get("imp")
-    if (impArray == null || !impArray.isArray || !impArray.elements.hasNext) throw new IllegalArgumentException
+    if (impArray == null || !impArray.isArray || !impArray.elements
+      .hasNext) throw new IllegalArgumentException
 
     val imp = impArray.elements.next
     val impId = imp.get("id")
     if (impId == null || !impId.isTextual) throw new IllegalArgumentException
 
-    val impType = if ( imp.has("banner") ) 1
-    else if ( imp.has("video") ) 2
-    else if ( imp.has("native") ) 3
+    val impType = if (imp.has("banner")) 1
+    else if (imp.has("video")) 2
+    else if (imp.has("native")) 3
     else throw new IllegalArgumentException
 
     val bidResponse = impType match {
@@ -106,10 +107,14 @@ class ResponseFactory {
         bidResponse.set("seatbid", mapper.createArrayNode)
 
       case Some(WinNoticeWithoutAdm) =>
-        bidNode.put("nurl", s"http://${winHost.get}/win-notice?modifier=winnotice-withoutadm&type=$impType")
+        bidNode
+          .put(
+            "nurl",
+            s"http://${winHost.get}/win-notice?modifier=winnotice-withoutadm&type=$impType")
 
       case m@Some(WinNoticeWithAdm | TimeoutWinNoticeWithAdm(_) | BrokenWinNoticeWithAdm) =>
-        bidNode.put("nurl", s"http://${winHost.get}/win-notice?modifier=${m.get.toString}&type=$impType")
+        bidNode
+          .put("nurl", s"http://${winHost.get}/win-notice?modifier=${m.get.toString}&type=$impType")
         bidNode.remove("adm")
 
       case _ =>

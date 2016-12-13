@@ -8,7 +8,7 @@ Run application using **sbt "run -p \<port\>"** where port - application port.
 
 Send POST requests in given format:
  
-**http://\<host\>:\<port\>?timeout=\<timeout\>&price=\<price\>&    modifier=\<modifier\>&winhost=\<winhost\>**
+**http://\<host\>:\<port\>?timeout=\<timeout\>\&price=\<price\>\&    modifier=\<modifier\>\&winhost=\<winhost\>**
 
 ### Parameters:
 

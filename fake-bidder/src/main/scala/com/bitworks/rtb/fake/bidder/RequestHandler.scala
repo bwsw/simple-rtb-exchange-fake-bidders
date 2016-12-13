@@ -62,10 +62,11 @@ class RequestHandler(config: Config) {
           entity(as[Array[Byte]]) { body =>
             val modifier = modifierFactory.getModifier(modifierStr)
             modifier match {
-              case Some(WinNoticeWithAdm |
-                        WinNoticeWithoutAdm |
-                        BrokenWinNoticeWithAdm |
-                        TimeoutWinNoticeWithAdm(_)) if winHostStr.isEmpty =>
+              case Some(
+              WinNoticeWithAdm |
+              WinNoticeWithoutAdm |
+              BrokenWinNoticeWithAdm |
+              TimeoutWinNoticeWithAdm(_)) if winHostStr.isEmpty =>
                 complete {
                   HttpResponse(
                     entity = "win host not specified!",
@@ -80,7 +81,11 @@ class RequestHandler(config: Config) {
                 }
                 onComplete(f) {
                   case Success(bytes) =>
-                    val status = if ( modifier.contains(NoBidNoContent) ) StatusCodes.NoContent else StatusCodes.OK
+                    val status = if (modifier.contains(NoBidNoContent)) {
+                      StatusCodes.NoContent
+                    } else {
+                      StatusCodes.OK
+                    }
                     complete {
                       HttpResponse(
                         status = status,
