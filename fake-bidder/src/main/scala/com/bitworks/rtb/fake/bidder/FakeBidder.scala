@@ -11,7 +11,7 @@ object FakeBidder extends App {
     case Some(config) =>
       val handler = new RequestHandler(config)
       handler.run()
-      println(s"Server online at http://0.0.0.0:${config.port}/")
+      println(s"Server online at http://${config.host}:${config.port}/")
       
     case None =>
   }

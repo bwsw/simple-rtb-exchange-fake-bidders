@@ -104,6 +104,6 @@ class RequestHandler(config: Config) {
     }
 
   def run() = {
-    Http().bindAndHandle(route, "0.0.0.0", config.port)
+    Http().bindAndHandle(route, config.host, config.port)
   }
 }
