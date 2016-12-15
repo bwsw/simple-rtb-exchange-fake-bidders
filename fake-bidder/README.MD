@@ -1,22 +1,65 @@
-# Fake bidder utility
+Fake bidder
+===========
 
-This application provides access to fake RTB bidders.
+This application provides fake RTB bidders used for e2e testing.
 
-## Usage
+Introduction
+------------
 
-Run application using **sbt "run -p \<port\>"** where port - application port.
+Fake bidder allows to emulate bid and win notice requests with a specified timeout.
 
-Send POST requests in given format:
+Requirements
+------------
+
+* [Sbt](http://www.scala-sbt.org/)
+* [Docker](https://www.docker.com/) 
+
+Usage
+------
+
+### Build jar file with dependencies
+
+Building requires setting up database for tests or setting `test in assembly := {}` for disabling tests.
+
+The command `sbt assembly` builds *target/scala-2.11/fake-bidder-\<VERSION\>-jar-with-dependencies.jar*.
+
+### Build docker image
+
+This project provides two options for docker images:
+
+using Nexus
+    
+    docker build -t <image name> -f Nexus.dockerfile --build-arg URL=<nexus URL> --build-arg USERNAME=<nexus user> --build-arg PASSWORD=<nexus user password> .
+    
+using a ready jar
+    
+    docker build -t <image name> --build-arg APP_PATH=<path to jar with dependencies> .
+    
+### Run application via jar file
+    
+    java -p <port> -h <host> -jar <PATH-TO-JAR>
+    
+* *\<port\>* &mdash; bind port.
+* *\<host\>* &mdash; bind address.
+
+### Run application in docker
+    
+    docker run -d -p<port>:8083 <image_name>
+    
+* *\<port\>* &mdash; listen port. Default value is *8083*.
+* *\<image_name\>* &mdash; name of docker image.
  
-**http://\<host\>:\<port\>?timeout=\<timeout\>\&price=\<price\>\&    modifier=\<modifier\>\&winhost=\<winhost\>**
+### Send bid request
 
-### Parameters:
+**http://\<host\>:\<port\>?timeout=\<timeout\>\&price=\<price\>\&modifier=\<modifier\>\&winhost=\<winhost\>**
+
+#### Parameters:
 
 - **\<host\>** - application host,
 - **\<port\>** - application port,
-- **\<timeout\>** - waiting time before response,
+- **\<timeout\>** - time to wait before sending response,
 - **\<price\>** - bid price,
-- **\<modifier\>** = bid response modifier, possible bid response options:
+- **\<modifier\>** - bid response modifier, possible options:
     * invalidjson - JSON with invalid syntax,
     * invaliddata - invalid data,
     * nobidnocontent - empty body and 204 status code,
@@ -27,3 +70,21 @@ Send POST requests in given format:
     * winnotice-broken - only nurl in response, returning 500 status code,
     * winnotice-timeout-**\<win-timeout\>** - only nurl in response, returning adm after **\<win-timeout\>**,
 - **\<winhost\>** - host for win notice, required if winnotice-* modifier specified.
+
+### Send win notice request
+
+**http://\<host\>:\<port\>/win-notice?modifier=\<modifier\>\&type=\<type\>**
+
+#### Parameters:
+
+- **\<host\>** - application host,
+- **\<port\>** - application port,
+- **\<modifier\>** - win notice modifier, possible options:
+    * winnotice-withoutadm - 200 status code,
+    * winnotice-withadm - 200 status code and ad markup in the body,
+    * winnotice-timeout-**\<win-timeout\>** - 200 status code and ad markup in the body after **\<win-timeout\>**,
+- **\<modifier\>** - ad markup type, possible options:
+    * 1 - banner,
+    * 2 - native,
+    * 3 - video.
+
