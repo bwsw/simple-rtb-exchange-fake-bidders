@@ -11,15 +11,13 @@ Fake bidder allows to emulate bid and win notice requests with a specified timeo
 Requirements
 ------------
 
-* [Sbt](http://www.scala-sbt.org/)
+* [sbt](http://www.scala-sbt.org/)
 * [Docker](https://www.docker.com/) 
 
 Usage
 ------
 
 ### Build jar file with dependencies
-
-Building requires setting up database for tests or setting `test in assembly := {}` for disabling tests.
 
 The command `sbt assembly` builds *target/scala-2.11/fake-bidder-\<VERSION\>-jar-with-dependencies.jar*.
 
@@ -46,7 +44,7 @@ using a ready jar
     
     docker run -d -p<port>:8083 <image_name>
     
-* *\<port\>* &mdash; listen port. Default value is *8083*.
+* *\<port\>* &mdash; bind port. Default value is *8083*.
 * *\<image_name\>* &mdash; name of docker image.
  
 ### Send bid request
@@ -80,9 +78,9 @@ using a ready jar
 - **\<host\>** - application host,
 - **\<port\>** - application port,
 - **\<modifier\>** - win notice modifier, possible options:
-    * winnotice-withoutadm - 200 status code,
-    * winnotice-withadm - 200 status code and ad markup in the body,
-    * winnotice-timeout-**\<win-timeout\>** - 200 status code and ad markup in the body after **\<win-timeout\>**,
+    * winnotice-withoutadm - 200 status code and empty body,
+    * winnotice-withadm - 200 status code and ad markup in body,
+    * winnotice-timeout-**\<win-timeout\>** - 200 status code and ad markup in body after **\<win-timeout\>**,
 - **\<modifier\>** - ad markup type, possible options:
     * 1 - banner,
     * 2 - native,
