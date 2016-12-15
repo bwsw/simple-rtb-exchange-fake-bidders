@@ -1,1 +1,5 @@
-Utilities for RTB Exchanger.
+RTB utilities
+=============
+
+This project provides utilities for RTB exchange.
+
