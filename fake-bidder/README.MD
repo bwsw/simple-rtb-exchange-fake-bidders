@@ -4,11 +4,13 @@ This application provides access to fake RTB bidders.
 
 ## Usage
 
-Run application using **sbt "run -p \<port\>"** where port - application port.
+Run application using **sbt "run -p \<port\> -h \<host\>"** where:
+- **\<port\>** - application port,
+- **\<host\>** - application host.
 
 Send POST requests in given format:
  
-**http://\<host\>:\<port\>?timeout=\<timeout\>\&price=\<price\>\&    modifier=\<modifier\>\&winhost=\<winhost\>**
+**http://\<host\>:\<port\>?timeout=\<timeout\>\&price=\<price\>\&modifier=\<modifier\>\&winhost=\<winhost\>**
 
 ### Parameters:
 
