@@ -35,7 +35,7 @@ using a ready jar
     
 ### Run application via jar file
     
-    java -p <port> -h <host> -jar <PATH-TO-JAR>
+    java -jar <PATH-TO-JAR> -p <port> -h <host>
     
 * *\<port\>* &mdash; bind port.
 * *\<host\>* &mdash; bind address.
