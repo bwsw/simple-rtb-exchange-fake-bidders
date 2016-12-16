@@ -27,7 +27,7 @@ This project provides two options for docker images:
 
 using Nexus
     
-    docker build -t <image name> -f Nexus.dockerfile --build-arg URL=<nexus URL> --build-arg USERNAME=<nexus user> --build-arg PASSWORD=<nexus user password> .
+    docker build -t <image name> -f Nexus.Dockerfile --build-arg URL=<nexus URL> --build-arg USERNAME=<nexus user> --build-arg PASSWORD=<nexus user password> .
     
 using a ready jar
     
